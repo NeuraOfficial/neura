@@ -85,3 +85,40 @@ class ToolCalls(ResponseType):
     
     def get_list(self) -> list:
         return self.list
+    
+class Usage(Responsetype, JsonMixin):
+    def __str__(self) -> str:
+        return ""
+    
+class AuthResult(JsonMixin):
+    def __str__(self):
+        return ""
+    
+class TitleGeneration(ResponseType):
+    def __init__(self, title: str) -> None:
+        self.title = title
+    
+    def __str__(self) -> str:
+        return ""
+    
+class Reasoning(ResponseType):
+    def __init__(self, token: str = None, status: str = None) -> None:
+        self.token = token
+        self.status = status
+    
+    def __str__(self) -> str:
+        return f"{self.status}\n" if self.token is None else self.token
+    
+class Source(ResponseType):
+    def __init__(self, sources: list[dict[str, str]]) -> None:
+        self.list = []
+        
+        for source in sources:
+            self.add_source(source)
+        
+    def add_source(self, source: dict[str, str]):
+        url = source.get("url", source.get("link", None))
+        
+        if url is not None:
+            url = re.sub()
+            self.list.append(source)
