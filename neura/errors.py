@@ -13,3 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -----------------------------------------------------------------------------
+
+class ProviderNotFoundError(Exception):
+    ...
+    
+class ProviderNotWorkingError(Exception):
+    ...
+    
+class StreamNotSupportedError(Exception):
+    ...
+    
+class ModelNotFoundError(Exception):
+    ...
+    
+class ModelNotAllowedError(Exception):
+    ...
