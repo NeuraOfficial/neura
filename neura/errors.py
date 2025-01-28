@@ -64,3 +64,8 @@ class RateLimitError(ResponseStatusError):
 
 class NoValidHarFileError(Exception):
     ...
+    
+class TimeoutError(Exception):
+
+class ConversationLimitError(Exception):
+    
