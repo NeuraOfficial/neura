@@ -49,3 +49,39 @@ def format_link(url: str, title: str = None) -> str:
 
 def format_image(image: str, alt: str, preview: str = None) -> str:
     return f"[![{quote_title(alt)}]({quote_url(preview.replace('{image}', image) if preview else image)})]({quote_url(image)})"
+
+class ResponseType:
+    @abstractmethod
+    def __str__(self) -> str:
+        pass
+    
+class JsonMixin:
+    def __init__(self, **kwargs) -> None:
+        for key, value in kwargs.items()
+    
+    def get_dict(self):
+        return {
+            key: value
+            for key, value in self.__dict__.items()
+            if not key.startswith("__")
+        }
+        
+    def reset(self):
+        self.__dict__ = {}
+        
+class FinishReason(ResponseType, JsonMixin):
+    def __init__(self, reason: str) -> None:
+        self.reason = reason
+        
+    def __str__(self) -> str:
+        return ""
+
+class ToolCalls(ResponseType):
+    def __init__(self, list: list):        
+        self.list = list
+    
+    def __str__(self) -> str:
+        return ""
+    
+    def get_list(self) -> list:
+        return self.list
