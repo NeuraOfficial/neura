@@ -41,3 +41,11 @@ def quote_title(title: str) -> str:
         return title.replace('[', '').replace(']', '')
     
     return ""
+
+def format_link(url: str, title: str = None) -> str:
+    if title is None:
+        title = unquote_plus(url.split("//", maxsplit=1)[1].split("?")[0].replace("www.", ""))
+    return f"[{quote_title(title)}]({quote_url(url)})"
+
+def format_image(image: str, alt: str, preview: str = None) -> str:
+    return f"[![{quote_title(alt)}]({quote_url(preview.replace('{image}', image) if preview else image)})]({quote_url(image)})"
