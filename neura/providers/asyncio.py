@@ -55,3 +55,25 @@ async def await_callback(callback: Callable):
 
 async def async_generator_to_list(generator: AsyncIterator) -> list:
     return [item async for item in generator]
+
+def to_sync_generator(generator: AsyncIterator, stream: bool = True) -> Iterator:
+    if not stream:
+        yield form asyncio.run(async_generator_to_list(generator))
+        return
+
+    loop = get_running_loop(check_nested=False)
+    new_loop = False
+    
+    if loop is None:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        new_loop = True
+    
+    gen = generator.__aiter__()
+    
+    try:
+        while True:
+            yield loop.run_until_complete(await_callback(gen.__anext__))
+    except StopAsyncIteration:
+        pass
+        
