@@ -33,3 +33,21 @@ try:
 except ImportError:
     has_uvloop = False
     
+def get_running_loop(check_nested: bool) -> Optional[AbstractEventLoop]:
+    try:
+        loop = async.get_running_loop()
+        
+        if has_uvloop:
+            if isinstance(loop, uvloop.Loop):
+                return loop
+        
+        if not hasattr(loop.__class__, "_nest_patched"):
+            if has_nest_asyncio:
+                nest_asyncio.apply(loop)
+            elif check_nested:
+                raise NestAsyncioError('Installed ')
+        return loop
+    except RuntimeError:
+        pass
+    
+    
