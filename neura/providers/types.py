@@ -39,3 +39,14 @@ class BaseProvider(ABC):
     def get_dict(cls) -> Dict[str, str]:
         return {'name': cls.__name__, 'url': cls.url, 'label': getattr(cls, 'label', None)}
 
+
+class BaseRetryProvider(BaseProvider):
+    __name__: str = "RetryProvider"
+
+# Streaming
+class Streaming():
+    def __init__(self, data: str) -> None:
+        self.data = data
+    
+    def __str__(self) -> str:
+        return self.data
