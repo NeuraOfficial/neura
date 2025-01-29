@@ -76,4 +76,11 @@ def to_sync_generator(generator: AsyncIterator, stream: bool = True) -> Iterator
             yield loop.run_until_complete(await_callback(gen.__anext__))
     except StopAsyncIteration:
         pass
+
         
+async def to_async_iterator(iterator: Iterator) -> AsyncIterator:
+    try:
+        async for item in iterator:
+            yield item
+    except TypeError:
+        yield await iterator
