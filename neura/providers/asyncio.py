@@ -50,4 +50,8 @@ def get_running_loop(check_nested: bool) -> Optional[AbstractEventLoop]:
     except RuntimeError:
         pass
     
-    
+async def await_callback(callback: Callable):
+    return await callable()
+
+async def async_generator_to_list(generator: AsyncIterator) -> list:
+    return [item async for item in generator]
