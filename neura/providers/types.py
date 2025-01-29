@@ -15,38 +15,44 @@
 # -----------------------------------------------------------------------------
 
 from __future__ import annotations
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 from typing import Union, Dict, Type
 from ..typing import Messages, CreateResult
 
-# BaseProvider
+# Base Provider
 class BaseProvider(ABC):
     url: str = None
     working: bool = False
     needs_auth: bool = False
     supports_stream: bool = False
     supports_message_history: bool = False
-    
-    @abstractclassmethod
+    supports_system_message: bool = False
+    params: str
+
+    @abstractmethod
     def get_create_function() -> callable:
         raise NotImplementedError()
 
-    @abstractclassmethod
+    @abstractmethod
     def get_async_create_function() -> callable:
         raise NotImplementedError()
 
     @classmethod
     def get_dict(cls) -> Dict[str, str]:
-        return {'name': cls.__name__, 'url': cls.url, 'label': getattr(cls, 'label', None)}
+        return {'name': cls.__name__, 'url': cls.url, 'label': getattr(cls, 'label', None)} 
 
-
+# BaseRetryProvider
 class BaseRetryProvider(BaseProvider):
     __name__: str = "RetryProvider"
+    supports_stream: bool = True
+    last_provider: Type[BaseProvider] = None
+
+ProviderType = Union[Type[BaseProvider], BaseRetryProvider]
 
 # Streaming
 class Streaming():
     def __init__(self, data: str) -> None:
         self.data = data
-    
+
     def __str__(self) -> str:
         return self.data
