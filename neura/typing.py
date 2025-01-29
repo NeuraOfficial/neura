@@ -36,11 +36,17 @@ SHA256 = NewType('sha_256_hash', str)
 CreateResult = Iterator[Union[str, ResponseType]]
 AsyncResult = AsyncIterator[Union[str, ResponseType]]
 Message = List[Dict[str, Union[str, List[Dict[str, Union[str, Dict[str, str]]]]]]]
-
+Cookies = Dict[str, str]
+ImageType = Union[str, bytes, IO, Image, os.PathLike]
 
 __all__ = [
     'Any',
     'AsyncGenerator',
     'Generator',
-    'Tuple'
+    'Tuple',
+    'Union',
+    'List',
+    'Dict',
+    'Type',
+    'IO'
 ]
