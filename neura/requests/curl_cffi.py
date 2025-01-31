@@ -76,4 +76,21 @@ class StreamSession(AsyncSession):
         return WebSocket(self, url, **kwargs)
         
         
+class WebSocket():
+    def __init__(self, session, url, **kwargs) -> None:
+        if not has_curl_ws:
+            raise RuntimeError("CurlWsFlag in curl_cffi is missing | pip install -U curl_cffi")
         
+        self.session: StreamSession = session
+        self.url: str = url
+        
+        del kwargs["autoping"]
+        
+        self.options: dict = kwargs
+    
+    async def __aenter__(self):
+        self.inner = await self.session._ws_connect(self.url, **self.options)
+        return self
+    
+    async def __aexit__(self, *args):
+        await self.inner.aclose()
