@@ -94,3 +94,10 @@ class WebSocket():
     
     async def __aexit__(self, *args):
         await self.inner.aclose()
+        
+    async def receive_str(self, **kwargs) -> str:
+        bytes, _ = await self.inner.arecv()
+        return bytes.decode(errors="ignore")
+
+    async def send_str(self, data: str):
+        await self.inner.asend(data.encode(), CurlWsFlag.TEXT)
