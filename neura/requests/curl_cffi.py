@@ -45,3 +45,24 @@ class StreamResponse:
     
     async def json(self, **kwargs) -> Any:
         return json.loads(await self.inner.acontent(), **kwargs)
+
+    def iter_lines(self) -> AsyncGenerator[bytes, None]:
+        return self.inner.aiter_lines()
+
+    def iter_content(self) -> AsyncGenerator[bytes, None]:
+        return self.inner.aiter_content()
+    
+    async def __aenter__(self):
+        inner: Response = await self.inner
+        self.inner = inner
+        self.request = inner.request
+        self.status: int = inner.status_code
+        self.reason: str = inner.reason
+        self.ok: bool = inner.ok
+        
+        return self
+
+    async def __aexit__(self, *args):
+        await self.inner.aclose()
+        
+        
