@@ -33,3 +33,24 @@ def format_prompt(messages: Messages, add_special_tokens: bool = False, do_conti
         return formatted
 
     return f"{formatted}"
+
+def format_prompt_max_length(messages: Messages, max_length: int) -> str:
+    prompt = format_prompt(messages)
+    start = len(prompt)
+    
+    if start > max_length:
+        if len(messages) > 6:
+            prompt = format_prompt(messages[:3] + messages[-3:])
+        
+        if len(prompt) > max_length:
+            if len(messages) > 2:
+                prompt = format_prompt([m for m in messages if m["role"] == "system"] + messages[-1:])
+            if len(prompt) > max_length:
+                prompt = messages[-1]["content"]
+                
+
+    return prompt
+
+def get_randrom_string(length: int = 10) -> str:
+    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(length))
+
