@@ -32,4 +32,13 @@ class StreamResponse(ClientResponse):
     async def json(self, content_type: str = None) -> Any:
         return await super().json(content_type=content_type)
     
-    
+class StreamSession(ClientSession):
+    def __init__(self, headers: dict = {}, timeout: int = None, connector: BaseConnector = None, proxy: str = None, proxies: dict = {}, impersonate = None, **kwargs):
+        if impersonate:
+            headers = {
+                **DEFAULT_HEADERS,
+                **headers
+            }
+            
+        connect = None
+        
