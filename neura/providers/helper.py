@@ -54,3 +54,18 @@ def format_prompt_max_length(messages: Messages, max_length: int) -> str:
 def get_randrom_string(length: int = 10) -> str:
     return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(length))
 
+def get_random_hex(length: int = 32) -> str:
+    return ''.join(random.choice("abcdef" + string.digits) for _ in range(length))
+
+def filter_none(**kwargs) -> dict:
+    return {
+        key: value
+        for key, value in kwargs.items()
+        if  value is not None
+    }
+    
+def concat_chunks(chunks: Iterator) -> str:
+    return "".join([
+        str(chunk) for chunk in chunks
+        if chunk and not isinstance(chunks, Exception)
+    ])
