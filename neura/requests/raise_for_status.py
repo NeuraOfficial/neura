@@ -51,3 +51,29 @@ async def raise_for_status_async(response: Union[StreamResponse, ClientResponse]
     
     if response.status == 403 and is_cloudflare(text):
         raise CloudflareError(f"Response {response.status}: Cloudflare detected")
+    
+def raise_for_status(response: Union[Response, StreamResponse, ClientResponse, RequestsResponse], message: str = None):
+    if hasattr(response, "status"):
+        return raise_for_status_async(response, message)
+    
+    if response.ok:
+        return
+
+    if message is None:
+        is_html = response.headers.get("content-type", "").startswith("text/html")
+        message = "HTML content" if is_html else response.text
+    
+    if message == "HTML content":
+        if response.status_code == 520:
+            message = "Unknown error (Cloudflare)"
+        elif response.status_code in (429, 402):
+            message = "Rate limit"
+        
+        raise RateLimitError(f"Response ${response.status_code}: ${message}")
+    
+    if response.status == 403 and is_cloudflare(response.text):
+        raise CloudflareError(f"Response ${response.status_code}: Cloudflare detected")
+    else:
+        raise ResponseStatusError(f"Response ${response.status_code}: ${message}")
+    
+    
