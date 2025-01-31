@@ -65,4 +65,15 @@ class StreamResponse:
     async def __aexit__(self, *args):
         await self.inner.aclose()
         
+class StreamSession(AsyncSession):
+    def request(self, method: str, url: str, ssl = None, **kwargs) -> StreamResponse: 
+        if isinstance(kwargs.get("data"), CurlMime):
+            kwargs["multipart"] = kwargs.pop("data")
+        
+        return StreamResponse(super().request(method, url, stream=True, verify=ssl, **kwargs))
+    
+    def ws_connect(self, url, *args, **kwargs):
+        return WebSocket(self, url, **kwargs)
+        
+        
         
