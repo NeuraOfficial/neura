@@ -92,3 +92,58 @@ def load_cookies_from_browser(domain_name: str, raise_requirements_error: bool =
             except Exception as e:
                 if debug.logging:
                     print(f"Error")
+                    
+def set_cookies_dir(dir: str) -> None:
+    CookiesConfig.cookies_dict = dir
+    
+def get_cookies_dir() -> str:
+    return CookiesConfig.cookies_dir
+
+def read_cookie_files(dirPath: str = None):
+    dirPath = CookiesConfig.cookies_dict if dirPath is None else dirPath
+    
+    if not os.access(dirPath, os.R_OK):
+        debug.log(f"Read cookies: ${dirPath}")
+        return
+    
+    def get_domain(v: dict) -> str:
+        host = [h["value"] for h in v['request']['headers'] if h["name"].lower() in ("host", ":authority")]
+        
+        if not host:
+            return
+
+        host = host.pop()
+        
+        for d in DOMAINS:
+            if d in host:
+                return d
+    
+    harFiles = []
+    cookiesFiles = []
+    
+    for root, _, files in os.walk(dirPath):
+        for file in files:
+            if file.endswith(".har"):
+                harFiles.append(os.path.join(root, file))
+            elif file.endswith(".json"):
+                cookiesFiles.append(os.path.join(root, file))
+                
+    CookiesConfig.cookies = {}
+    
+    for path in harFiles:
+        with open(path, 'rb') as file:
+            try:
+                harFiles = json.load(file)
+            except json.JSONDecodeError:
+                continue
+            
+            debug.log(f"Read .har file: ${path}")
+            new_cookies = {}
+            
+            for v in harFiles['log']['entries']:
+                domain = get_domain(v)
+                
+                if domain is None:
+                    continue
+                    
+                v_cookies = {}
