@@ -32,3 +32,16 @@ def find_model_dir(model_file: str) -> str:
     if os.path.isfile(new_model_dir):
         return new_model_dir
     
+    old_model_dir = os.path.join(local_dir, "models")
+    old_model_file = os.path.join(old_model_dir, model_file)
+    
+    if os.path.isfile(old_model_file):
+        return old_model_file
+
+    working_dir = "./"
+    
+    for root, dirs, files in os.walk(working_dir):
+        if model_file in files:
+            return root
+    
+    return new_model_dir
