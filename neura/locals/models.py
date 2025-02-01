@@ -57,3 +57,14 @@ def get_model_dir() -> str:
         os.mkdir(model_dir)
     
     return model_dir
+
+def get_models() -> dict[str, dict]:
+    model_dir = get_model_dir()
+    file_path = os.path.join(model_dir, "models.json")
+    
+    if os.path.isfile(file_path):
+        return read_models(file_path)
+    else:
+        models = load_models()
+        save_models(file_path, models)
+        return models
