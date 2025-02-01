@@ -45,3 +45,26 @@ def find_model_dir(model_file: str) -> str:
             return root
     
     return new_model_dir
+
+class LocalProvider:
+    @staticmethod
+    def create_completion(model: str, messages: Messages, stream: bool = False, **kwargs):
+        global MODEL_LIST
+        
+        if MODEL_LIST is None:
+            MODEL_LIST = get_models()
+        
+        if model not in MODEL_LIST:
+            raise ValueError(f"Model {model} not found")
+        
+        model = MODEL_LIST[model]
+        model_file = model["path"]
+        model_dir = find_model_dir(model_file)
+        
+        if not os.path.isfile(os.path.join(model_dir, model_file)):
+            print(f'Model file "model/${model_file}')
+            download = input(f"Do you want to download ${model_file}")
+            if download in ["y", "Y"]:
+                GPT4All.download_model(model_file, model_dir)
+            else:
+                raise ValueError(f'Model "{model_file} not found.')
