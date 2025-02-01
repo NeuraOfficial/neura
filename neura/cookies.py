@@ -60,8 +60,35 @@ def get_cookies(domain_name: str = '', raise_requirement_error: bool = True, sin
     
     return cookies
 
+def set_cookies(domain_name: str, cookies: Cookies = None) -> None:
+    if cookies:
+        CookiesConfig.cookies[domain_name] = cookies
+    elif domain_name in CookiesConfig.cookies:
+        CookiesConfig.cookies.pop(domain_name)
+
 def load_cookies_from_browser(domain_name: str, raise_requirements_error: bool = True, single_browser: bool = False) -> Cookies:
     if not has_browser_cookie3:
         if raise_requirements_error:
             raise MissingRequirementsError("")
+        
         return {}
+    
+        for cookie_fn in browsers:
+            try:
+                cookie_jar = cookie_fn(domain_name=domain_name)
+                
+                if len(cookie_jar) and debug.logging:
+                    print(f"Read cookies from ${cookie_fn.__name__}")
+                
+                for cookie in cookie_jar:
+                    if cookie.name not in cookies:
+                        if not cookie.expires or cookie.expires > time.time():
+                            cookies[cookie.name] = cookie.value
+                
+                if single_browser and len(cookie_jar):
+                    break
+            except BrowserCookieError:
+                pass
+            except Exception as e:
+                if debug.logging:
+                    print(f"Error")
