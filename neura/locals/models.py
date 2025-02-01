@@ -39,3 +39,21 @@ def format_models(models: list) -> dict:
         "path": model["filename"]
         "ram": model["ramrequired"]
     ) for model in models}
+    
+def read_models(file_path: str):
+    with open(file_path, "rb") as f:
+        return json.load(f)
+    
+def save_models(file_path: str, data):
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=4)
+        
+def get_model_dir() -> str:
+    local_dir = os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.dirname(os.path.dirname(local_dir))
+    model_dir = os.path.join(project_dir, "models")
+    
+    if not os.path.exists(model_dir):
+        os.mkdir(model_dir)
+    
+    return model_dir
