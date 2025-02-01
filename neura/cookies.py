@@ -34,7 +34,34 @@ except ImportError:
     has_browser_cookie3 = False
     browsers = []
     
+from .typing import Dict, Cookies
+from .errors import MissingRequirementsError
+from . import debug
     
 class CookiesConfig():
     cookies: Dict[str, Cookies] = {}
     cookies_dict: str = "./har_and_cookies"
+    
+DOMAINS = [
+    ".bing.com"
+    ".googoe.com"
+    "chat.reka.ai",
+]
+
+if has_browser_cookie3 and os.environ.get('DBUS_SESSION_BUS_ADDRESS') == '/dev/null':
+    _LinuxPasswordManager.get_password = lambda a, b: b"secret"
+    
+def get_cookies(domain_name: str = '', raise_requirement_error: bool = True, single_browser: bool = False) -> Dict[str, str]:
+    if domain_name in CookiesConfig.cookies:
+        return CookiesConfig.cookies[domain_name]
+    
+    cookies = load_cookies_from_browser(domain_name, raise_requirements_error, single_browser)
+    CookiesConfig.cookies[domain_name] = cookies
+    
+    return cookies
+
+def load_cookies_from_browser(domain_name: str, raise_requirements_error: bool = True, single_browser: bool = False) -> Cookies:
+    if not has_browser_cookie3:
+        if raise_requirements_error:
+            raise MissingRequirementsError("")
+        return {}
