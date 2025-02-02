@@ -80,3 +80,18 @@ PARAMETER_EXAMPLES = {
     "stop": ["stop1", "stop2"],
     "tools": [],
 }
+
+class AbstractProvider(BaseProvider):
+    @classmethod
+    @abstractmethod
+    def create_completion(cls, model: str, messages: Messages, stream: bool, **kwargs) -> CreateResult:
+        raise NotImplementedError()
+    
+    @classmethod
+    async def create_async(cls, model: str, messages: Messages, *, timeout: int = None, loop: AbstractEventLoop = None, executor: ThreadPoolExecutor = None, **kwargs) -> str:
+        def create_func() -> str:
+            return concat_chunks(cls.create_completion(model, message, **kwargs))
+        
+        return await asyncio.wait_for(loop.run_in_executor(executor, create_func), timeout=timeout)
+    
+                
