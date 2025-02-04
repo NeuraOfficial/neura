@@ -51,3 +51,11 @@ class IterListProvider(BaseRetryProvider):
             except Exception as e:
                 yield e
             
+            
+def raise_exceptions(exceptions: dict) -> None:
+    if exceptions:
+        raise RetryProviderError("RetryProvider failed: \n", + "\n".join([
+            f"{p}: {type(exception).__name__} : {exception}"
+        ]))
+        
+    raise RetryNoProviderError("No provider found")
